@@ -2,8 +2,7 @@ package com.trupalpatel.kmeans.hadoop;
 
 import java.io.IOException;
 
-// import com.trupalpatel.utils.Vector;
-import it.unipi.hadoop.model.Vector;
+import com.trupalpatel.geometry.Vector;
 
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;

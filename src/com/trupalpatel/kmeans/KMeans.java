@@ -16,8 +16,7 @@ import java.util.Random;
 import com.trupalpatel.kmeans.hadoop.KMeansCombiner;
 import com.trupalpatel.kmeans.hadoop.KMeansMapper;
 import com.trupalpatel.kmeans.hadoop.KMeansReducer;
-// import com.trupalpatel.utils.Vector;
-import it.unipi.hadoop.model.Vector;
+import com.trupalpatel.geometry.Vector;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;

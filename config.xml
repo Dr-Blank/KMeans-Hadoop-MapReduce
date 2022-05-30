@@ -2,7 +2,7 @@
 <configuration>
   <property>
     <name>dataset</name>
-    <value>10</value>
+    <value>100</value>
     <description>Dimension of the dataset</description>
   </property>
   <property>
@@ -22,7 +22,7 @@
   </property>
   <property>
     <name>max.iteration</name>
-    <value>4</value>
+    <value>5</value>
     <description>Maximum number of iteration</description>
   </property>
 </configuration>
