@@ -84,7 +84,7 @@ public class Vector implements Writable {
         return s.substring(1, s.length() - 1).replace(", ", ",");
     }
 
-    public static Vector add(Vector v1, Vector v2) {
+    public static Vector sum(Vector v1, Vector v2) {
         if (!(Vector.areCompatible(v1, v2))) {
             throw new IllegalArgumentException("Dimension mismatch");
         }
@@ -97,13 +97,13 @@ public class Vector implements Writable {
     }
 
     public Vector add(Vector otherVector) {
-        Vector summed = Vector.add(this, otherVector);
+        Vector summed = Vector.sum(this, otherVector);
         this.setComponents(summed.getComponents());
         this.weight += otherVector.weight;
         return this;
     }
 
-    public float distance(Vector otherVector) {
+    public float distanceTo(Vector otherVector) {
         if (!(Vector.areCompatible(this, otherVector))) {
             throw new IllegalArgumentException("Dimension mismatch");
         }
@@ -116,7 +116,7 @@ public class Vector implements Writable {
         return distance;
     }
 
-    public Vector scale(float factor) {
+    public Vector scaleBy(float factor) {
         for (int i = 0; i < this.dimensions; i++) {
             this.components[i] = (float) this.components[i] * factor;
         }
@@ -124,7 +124,7 @@ public class Vector implements Writable {
     }
 
     public Vector averageOut() {
-        this.scale((float) 1 / this.weight);
+        this.scaleBy((float) 1 / this.weight);
         this.weight = 1;
         return this;
     }
