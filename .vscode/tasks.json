@@ -3,7 +3,7 @@
   "tasks": [
     {
       "type": "java",
-      "mainClass": "it.unipi.hadoop.KMeans",
+      "mainClass": "com.trupalpatel.kmeans.KMeans",
       "targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
       "elements": ["${compileOutput}", "${dependencies}"],
       "problemMatcher": [],
@@ -17,7 +17,7 @@
       "label": "Delete previous outputs",
       "type": "shell",
       "detail": "deletes the previous outputs from kmeans",
-      "command": "hdfs dfs -rm -r /kmeans/outputs"
+      "command": "hdfs dfs -rm -r /kmeans/outputsORG"
     },
     {
       "label": "Run hadoop jar",
@@ -26,7 +26,8 @@
       "dependsOrder": "sequence",
       "detail": "runs kmeans",
       "command": "hadoop jar '${workspaceFolder}\\${workspaceFolderBasename}.jar' /kmeans/input/data_points.txt /kmeans/outputsORG",
-      "group": "test"
+      "group": "test",
+      "problemMatcher": []
     }
   ]
 }
