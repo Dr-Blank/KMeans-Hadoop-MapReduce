@@ -7,7 +7,7 @@
       "targetPath": "${workspaceFolder}/${workspaceFolderBasename}.jar",
       "elements": ["${compileOutput}", "${dependencies}"],
       "problemMatcher": [],
-      "label": "java: exportjar:kmeans_org",
+      "label": "java: exportjar:KMeans",
       "group": {
         "kind": "build",
         "isDefault": true
@@ -22,7 +22,7 @@
     {
       "label": "Run hadoop jar",
       "type": "shell",
-      "dependsOn": ["Delete previous outputs"],
+      "dependsOn": ["Delete previous outputs", "java: exportjar:KMeans"],
       "dependsOrder": "sequence",
       "detail": "runs kmeans",
       "command": "hadoop jar '${workspaceFolder}\\${workspaceFolderBasename}.jar' /kmeans/input/data_points.txt /kmeans/outputsORG",

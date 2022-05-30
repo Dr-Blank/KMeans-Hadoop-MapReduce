@@ -2,12 +2,12 @@ package com.trupalpatel.kmeans.hadoop;
 
 import java.io.IOException;
 
+import com.trupalpatel.geometry.Vector;
+
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
-
-import com.trupalpatel.geometry.Vector;
 
 public class KMeansMapper extends Mapper<LongWritable, Text, IntWritable, Vector> {
 
@@ -39,7 +39,7 @@ public class KMeansMapper extends Mapper<LongWritable, Text, IntWritable, Vector
 
         // Find the closest centroid
         for (int i = 0; i < centroids.length; i++) {
-            currentDistance = vector.distance(centroids[i]);
+            currentDistance = vector.distanceTo(centroids[i]);
             if (currentDistance < minimumDistance) {
                 closestCentroidIndex = i;
                 minimumDistance = currentDistance;

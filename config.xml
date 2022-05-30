@@ -1,14 +1,9 @@
 <?xml version="1.0"?>
 <configuration>
   <property>
-    <name>dataset</name>
-    <value>100</value>
-    <description>Dimension of the dataset</description>
-  </property>
-  <property>
-    <name>distance</name>
-    <value>5</value>
-    <description>Type of distance adopted</description>
+    <name>dataset.size</name>
+    <value>1000</value>
+    <description>number of input vectors, comes from line count MR</description>
   </property>
   <property>
     <name>k</name>
@@ -17,12 +12,12 @@
   </property>
   <property>
     <name>threshold</name>
-    <value>0</value>
-    <description>Threshold for the stopping criterion</description>
+    <value>0.1</value>
+    <description>Threshold for convergence</description>
   </property>
   <property>
-    <name>max.iteration</name>
-    <value>5</value>
+    <name>max.iterations</name>
+    <value>15</value>
     <description>Maximum number of iteration</description>
   </property>
 </configuration>
