@@ -136,11 +136,20 @@ public class Vector implements Writable {
         this.scale();
     }
 
-    // public static Vector copy(final Vector p) {
-    // Vector ret = new Vector(p.components);
-    // ret.numPoints = p.numPoints;
-    // return ret;
-    // }
+    public Vector scale(float factor) {
+        for (int i = 0; i < this.dim; i++) {
+            this.components[i] = (float) this.components[i] * factor;
+        }
+        return this;
+    }
+
+    public Vector averageOut() {
+        this.scale((float) 1 / this.numPoints);
+        this.numPoints = 1;
+        return this;
+        // this.scale();
+        // return this;
+    }
 
     public static Vector copy(Vector v) {
         Vector newVector = new Vector(v.components);
