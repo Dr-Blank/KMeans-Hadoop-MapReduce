@@ -14,10 +14,26 @@
       }
     },
     {
+      "label": "Start Hadoop and Yarn",
+      "detail": "runs the custom script to start Hadoop and Yarn",
+      "type": "shell",
+      "command": "start-hadoop-yarn.ps1",
+      "presentation": {
+        "echo": true,
+        "reveal": "silent",
+        "focus": false,
+        "panel": "shared",
+        "showReuseMessage": true,
+        "clear": false,
+        "close": true
+      },
+      "group": "test"
+    },
+    {
       "label": "Delete previous outputs",
       "type": "shell",
       "detail": "deletes the previous outputs from kmeans",
-      "command": "hdfs dfs -rm -r /kmeans/outputsORG"
+      "command": "hdfs dfs -rm -r /kmeans/outputs"
     },
     {
       "label": "Run hadoop jar",
@@ -25,7 +41,7 @@
       "dependsOn": ["Delete previous outputs", "java: exportjar:KMeans"],
       "dependsOrder": "sequence",
       "detail": "runs kmeans",
-      "command": "hadoop jar '${workspaceFolder}\\${workspaceFolderBasename}.jar' /kmeans/input/data_points.txt /kmeans/outputsORG",
+      "command": "hadoop jar '${workspaceFolder}\\${workspaceFolderBasename}.jar' /kmeans/input/data_points.txt /kmeans/outputs",
       "group": "test",
       "problemMatcher": []
     }

@@ -212,7 +212,7 @@ public class KMeans {
       newCentroids = readCentroids(conf, K, TEMPORARY_OUTPUT_FOLDER);
 
       // check for convergence 🎯
-      if (convergenceAchieved(oldCentroids, newCentroids, THRESHOLD) || i >= (MAX_ITERATIONS - 1)) {
+      if (convergenceAchieved(oldCentroids, newCentroids, THRESHOLD) || i >= MAX_ITERATIONS) {
         writeCentroids(conf, newCentroids, otherArgs[1]);
         break;
       }

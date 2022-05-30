@@ -1,18 +1,15 @@
-## Getting Started
+# KMeans using Hadoop MapReduce
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+## Steps to run:
 
-## Folder Structure
+1. Export the jar file 
+2. Start hadoop and yarn
+3. Setup Configuration file as per requirements
+4. run the command `hadoop jar <jar_file> <input_file> <output_folder>`
+  
 
-The workspace contains two folders by default, where:
+### If you have vs code
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
-
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
-
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
-
-## Dependency Management
-
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+1. press `ctrl + shift + p` and type "Run Test Task"
+2. Select "Start Hadoop and Yarn"
+3. Do step 1 and select "Run Hadoop jar"
