@@ -35,19 +35,6 @@ import org.apache.hadoop.util.GenericOptionsParser;
 
 public class KMeans {
 
-  // private static boolean stoppingCriterion(
-  // Vector[] oldCentroids, Vector[] newCentroids, int distance,
-  // float threshold) {
-  // boolean check = true;
-  // for (int i = 0; i < oldCentroids.length; i++) {
-  // check = oldCentroids[i].distance(newCentroids[i], distance) <= threshold;
-  // if (!check) {
-  // return false;
-  // }
-  // }
-  // return true;
-  // }
-
   private static boolean convergenceAchieved(
       Vector[] oldCentroids, Vector[] newCentroids,
       float threshold) {
@@ -60,48 +47,6 @@ public class KMeans {
     }
     return true;
   }
-
-  // private static Vector[] centroidsInit(Configuration conf, String pathString,
-  // int k, int dataSetSize)
-  // throws IOException {
-  // Vector[] points = new Vector[k];
-
-  // // Create a sorted list of positions without duplicates
-  // // Positions are the line index of the random selected centroids
-  // List<Integer> positions = new ArrayList<Integer>();
-  // Random random = new Random();
-  // int pos;
-  // while (positions.size() < k) {
-  // pos = random.nextInt(dataSetSize);
-  // if (!positions.contains(pos)) {
-  // positions.add(pos);
-  // }
-  // }
-  // Collections.sort(positions);
-
-  // // File reading utils
-  // Path path = new Path(pathString);
-  // FileSystem hdfs = FileSystem.get(conf);
-  // FSDataInputStream in = hdfs.open(path);
-  // BufferedReader br = new BufferedReader(new InputStreamReader(in));
-
-  // // Get centroids from the file
-  // int row = 0;
-  // int i = 0;
-  // int position;
-  // while (i < positions.size()) {
-  // position = positions.get(i);
-  // String point = br.readLine();
-  // if (row == position) {
-  // points[i] = new Vector(point.split(","));
-  // i++;
-  // }
-  // row++;
-  // }
-  // br.close();
-
-  // return points;
-  // }
 
   private static Vector[] getRandomCentroids(Configuration conf, String inputFileStringPath, int k, int dataSetSize)
       throws IOException {
@@ -145,31 +90,6 @@ public class KMeans {
     return vectors;
   }
 
-  // private static Vector[] readCentroids(Configuration conf, int k, String
-  // pathString)
-  // throws IOException, FileNotFoundException {
-  // Vector[] points = new Vector[k];
-  // FileSystem hdfs = FileSystem.get(conf);
-  // FileStatus[] status = hdfs.listStatus(new Path(pathString));
-
-  // for (int i = 0; i < status.length; i++) {
-  // // Read the centroids from the hdfs
-  // if (!status[i].getPath().toString().endsWith("_SUCCESS")) {
-  // BufferedReader br = new BufferedReader(new
-  // InputStreamReader(hdfs.open(status[i].getPath())));
-  // String[] keyValueSplit = br.readLine().split("\t"); // Split line in K,V
-  // int centroidId = Integer.parseInt(keyValueSplit[0]);
-  // String[] point = keyValueSplit[1].split(",");
-  // points[centroidId] = new Vector(point);
-  // br.close();
-  // }
-  // }
-  // // Delete temp directory
-  // hdfs.delete(new Path(pathString), true);
-
-  // return points;
-  // }
-
   private static Vector[] readCentroids(Configuration conf, int k, String pathString)
       throws IOException, FileNotFoundException {
     Vector[] vectors = new Vector[k];
@@ -209,46 +129,47 @@ public class KMeans {
   }
 
   public static void main(String[] args) throws Exception {
-    long start = 0;
-    long end = 0;
-    long startIC = 0;
-    long endIC = 0;
+    long startTime = 0;
+    long endTime = 0;
+    long startTimeCentroids = 0;
+    long endTimeCentroids = 0;
 
-    start = System.currentTimeMillis();
+    startTime = System.currentTimeMillis();
     Configuration conf = new Configuration();
     conf.addResource(new Path("config.xml")); // Configuration file for the parameters
 
     String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
 
     if (otherArgs.length != 2) {
-      System.err.println("Usage: <input> <output>");
+      System.err.println("Usage: <input_file> <output_folder>");
       System.exit(1);
     }
 
     // Parameters setting
-    final String INPUT = otherArgs[0];
-    final String OUTPUT = otherArgs[1] + "/temp";
-    final int DATASET_SIZE = conf.getInt("dataset", 10);
+    final String INPUT_FILE = otherArgs[0];
+    final String TEMPORARY_OUTPUT_FOLDER = otherArgs[1] + "/temp";
+    final int DATASET_SIZE = conf.getInt("dataset.size", 10);
+    // final int DISTANCE = conf.getInt("distance", 2);
     final int K = conf.getInt("k", 3);
     final float THRESHOLD = conf.getFloat("threshold", 0.0001f);
-    final int MAX_ITERATIONS = conf.getInt("max.iteration", 30);
+    final int MAX_ITERATIONS = conf.getInt("max.iteration", 6);
 
     Vector[] oldCentroids = new Vector[K];
     Vector[] newCentroids = new Vector[K];
 
     // Initial centroids
-    startIC = System.currentTimeMillis();
-    newCentroids = getRandomCentroids(conf, INPUT, K, DATASET_SIZE);
-    endIC = System.currentTimeMillis();
+    startTimeCentroids = System.currentTimeMillis();
+    newCentroids = getRandomCentroids(conf, INPUT_FILE, K, DATASET_SIZE);
+    endTimeCentroids = System.currentTimeMillis();
+
     for (int i = 0; i < K; i++) {
       conf.set("centroid." + i, newCentroids[i].toString());
     }
 
     // MapReduce workflow
-    boolean stop = false;
     boolean succeeded = true;
     int i = 0;
-    while (!stop) {
+    while (true) {
       i++;
 
       // Job configuration
@@ -257,11 +178,11 @@ public class KMeans {
       iteration.setMapperClass(KMeansMapper.class);
       iteration.setCombinerClass(KMeansCombiner.class);
       iteration.setReducerClass(KMeansReducer.class);
-      iteration.setNumReduceTasks(K); // one task each centroid
+      iteration.setNumReduceTasks(K); // one task for each centroid
       iteration.setOutputKeyClass(IntWritable.class);
       iteration.setOutputValueClass(Vector.class);
-      FileInputFormat.addInputPath(iteration, new Path(INPUT));
-      FileOutputFormat.setOutputPath(iteration, new Path(OUTPUT));
+      FileInputFormat.addInputPath(iteration, new Path(INPUT_FILE));
+      FileOutputFormat.setOutputPath(iteration, new Path(TEMPORARY_OUTPUT_FOLDER));
       iteration.setInputFormatClass(TextInputFormat.class);
       iteration.setOutputFormatClass(TextOutputFormat.class);
 
@@ -274,16 +195,16 @@ public class KMeans {
       }
 
       // Save old centroids and read new centroids
-      for (int id = 0; id < K; id++) {
-        oldCentroids[id] = Vector.copy(newCentroids[id]);
+      for (int j = 0; j < K; j++) {
+        oldCentroids[j] = Vector.copy(newCentroids[j]);
       }
-      newCentroids = readCentroids(conf, K, OUTPUT);
+
+      newCentroids = readCentroids(conf, K, TEMPORARY_OUTPUT_FOLDER);
 
       // Check if centroids are changed
-      stop = convergenceAchieved(oldCentroids, newCentroids, THRESHOLD);
-
-      if (stop || i == (MAX_ITERATIONS - 1)) {
+      if (convergenceAchieved(oldCentroids, newCentroids, THRESHOLD) || i == (MAX_ITERATIONS - 1)) {
         finalize(conf, newCentroids, otherArgs[1]);
+        break;
       } else {
         // Set the new centroids in the configuration
         for (int d = 0; d < K; d++) {
@@ -293,13 +214,13 @@ public class KMeans {
       }
     }
 
-    end = System.currentTimeMillis();
+    endTime = System.currentTimeMillis();
 
-    end -= start;
-    endIC -= startIC;
+    endTime -= startTime;
+    endTimeCentroids -= startTimeCentroids;
 
-    System.out.println("execution time: " + end + " ms");
-    System.out.println("init centroid execution: " + endIC + " ms");
+    System.out.println("execution time: " + endTime + " ms");
+    System.out.println("init centroid execution: " + endTimeCentroids + " ms");
     System.out.println("n_iter: " + i);
 
     System.exit(0);
