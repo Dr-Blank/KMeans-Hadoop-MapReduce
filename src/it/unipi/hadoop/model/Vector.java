@@ -78,45 +78,46 @@ public class Vector implements Writable {
         return point.toString();
     }
 
-    public void sum(Vector p) {
+    // public void sum(Vector p) {
+    // for (int i = 0; i < this.dim; i++) {
+    // this.components[i] += p.components[i];
+    // }
+    // this.numPoints += p.numPoints;
+    // }
+
+    public Vector add(Vector otherVector) {
+        // if (!(Vector.areCompatible(this, otherVector))) {
+        // throw new IllegalArgumentException("Dimension mismatch");
+        // }
+
         for (int i = 0; i < this.dim; i++) {
-            this.components[i] += p.components[i];
+            this.components[i] += otherVector.components[i];
         }
-        this.numPoints += p.numPoints;
+
+        this.numPoints += otherVector.numPoints;
+
+        return this;
     }
 
-    // public float distance(Vector p, int h) {
-    // if (h < 0) {
-    // // Consider only metric distances
-    // h = 2;
-    // }
+    public static Vector add(Vector v1, Vector v2) {
+        // if (!(Vector.areCompatible(v1, v2))) {
+        // throw new IllegalArgumentException("Dimension mismatch");
+        // }
+        float[] newComponents = new float[v1.dim];
+        for (int i = 0; i < v1.dim; i++) {
+            newComponents[i] = v1.components[i] + v2.components[i];
+        }
+        return new Vector(newComponents);
 
-    // if (h == 0) {
-    // // Chebyshev
-    // float max = -1f;
-    // float diff = 0.0f;
-    // for (int i = 0; i < this.dim; i++) {
-    // diff = Math.abs(this.components[i] - p.components[i]);
-    // if (diff > max) {
-    // max = diff;
-    // }
-    // }
-    // return max;
+    }
 
-    // } else {
-    // // Manhattan, Euclidean, Minkowsky
-    // float dist = 0.0f;
-    // for (int i = 0; i < this.dim; i++) {
-    // dist += Math.pow(Math.abs(this.components[i] - p.components[i]), h);
-    // }
-    // dist = (float) Math.round(Math.pow(dist, 1f / h) * 100000) / 100000.0f;
-    // return dist;
-    // }
-    // }
+    public Vector sum(Vector otherVector) {
+        return this.add(otherVector);
+    }
 
     public float distance(Vector otherVector) {
         // if (!(Vector.areCompatible(this, otherVector))) {
-        //     throw new IllegalArgumentException("Dimension mismatch");
+        // throw new IllegalArgumentException("Dimension mismatch");
         // }
         // Euclidean distance
         float distance = 0.0f;
@@ -131,13 +132,6 @@ public class Vector implements Writable {
         return this.distance(otherVector);
     }
 
-    // public void average() {
-    //     for (int i = 0; i < this.dim; i++) {
-    //         float temp = this.components[i] / this.numPoints;
-    //         this.components[i] = (float) Math.round(temp * 100000) / 100000.0f;
-    //     }
-    //     this.numPoints = 1;
-    // }
     public void scale() {
         for (int i = 0; i < this.dim; i++) {
             float temp = this.components[i] / this.numPoints;
@@ -145,6 +139,7 @@ public class Vector implements Writable {
         }
         this.numPoints = 1;
     }
+
     public void average() {
         this.scale();
     }
