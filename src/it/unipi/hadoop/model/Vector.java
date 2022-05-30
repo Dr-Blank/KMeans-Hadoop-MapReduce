@@ -11,7 +11,7 @@ public class Vector implements Writable {
 
     private float[] components = null;
     private int dim;
-    private int numPoints=1; // For partial sums
+    private int numPoints = 1; // For partial sums
 
     public Vector() {
         this.dim = 0;
@@ -32,7 +32,6 @@ public class Vector implements Writable {
     public Vector(final String[] components) {
         this.setComponents(components);
     }
-
 
     public void setComponents(float[] components) {
         this.components = components;
@@ -136,11 +135,17 @@ public class Vector implements Writable {
     public void average() {
         this.scale();
     }
-    
-    public static Vector copy(final Vector p) {
-        Vector ret = new Vector(p.components);
-        ret.numPoints = p.numPoints;
-        return ret;
+
+    // public static Vector copy(final Vector p) {
+    // Vector ret = new Vector(p.components);
+    // ret.numPoints = p.numPoints;
+    // return ret;
+    // }
+
+    public static Vector copy(Vector v) {
+        Vector newVector = new Vector(v.components);
+        newVector.numPoints = v.numPoints;
+        return newVector;
     }
 
 }

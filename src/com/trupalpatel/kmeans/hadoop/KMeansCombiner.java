@@ -11,15 +11,15 @@ import org.apache.hadoop.mapreduce.Reducer;
 
 public class KMeansCombiner extends Reducer<IntWritable, Vector, IntWritable, Vector> {
 
-    public void reduce(IntWritable centroid, Iterable<Vector> points, Context context)
+    public void reduce(IntWritable centroidIndex, Iterable<Vector> vectors, Context context)
             throws IOException, InterruptedException {
 
-        // Sum the points
-        Vector sum = Vector.copy(points.iterator().next());
-        while (points.iterator().hasNext()) {
-            sum.sum(points.iterator().next());
+        // Sum the Vectors
+        Vector sum = Vector.copy(vectors.iterator().next());
+        while (vectors.iterator().hasNext()) {
+            sum.add(vectors.iterator().next());
         }
 
-        context.write(centroid, sum);
+        context.write(centroidIndex, sum);
     }
 }
