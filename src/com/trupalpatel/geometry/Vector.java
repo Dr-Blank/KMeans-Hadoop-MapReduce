@@ -8,10 +8,15 @@ import java.util.Arrays;
 import org.apache.hadoop.io.Writable;
 
 public class Vector implements Writable {
+    /**
+     * Vector class to represent a vector in n dimensions.
+     * 
+     * to be used with hadoop
+     */
 
-    private float[] components = null;
-    private int dimensions;
-    private int weight = 1; // For partial sums
+    private float[] components = null;// the components of the vector, x y z ....
+    private int dimensions;// number of components
+    private int weight = 1; // to keep track of the num times a vector was added to this vector
 
     public static boolean areCompatible(Vector v1, Vector v2) {
         return v1.dimensions == v2.dimensions;

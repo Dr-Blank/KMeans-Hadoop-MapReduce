@@ -2,12 +2,12 @@ package com.trupalpatel.kmeans.hadoop;
 
 import java.io.IOException;
 
-import com.trupalpatel.geometry.Vector;
-
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
+
+import com.trupalpatel.geometry.Vector;
 
 public class KMeansMapper extends Mapper<LongWritable, Text, IntWritable, Vector> {
 
