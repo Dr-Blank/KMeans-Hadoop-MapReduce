@@ -27,7 +27,6 @@ public class KMeansReducer extends Reducer<IntWritable, Vector, Text, Text> {
 
         centroidKey.set(centroidIndex.toString());
         centroidValue.set(newCentroid.toString());
-        // centroidValue.set(sum.toString());
         context.write(centroidKey, centroidValue);
     }
 }

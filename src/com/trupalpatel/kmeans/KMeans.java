@@ -35,11 +35,25 @@ import org.apache.hadoop.util.GenericOptionsParser;
 
 public class KMeans {
 
-  private static boolean stoppingCriterion(Vector[] oldCentroids, Vector[] newCentroids, int distance,
+  // private static boolean stoppingCriterion(
+  // Vector[] oldCentroids, Vector[] newCentroids, int distance,
+  // float threshold) {
+  // boolean check = true;
+  // for (int i = 0; i < oldCentroids.length; i++) {
+  // check = oldCentroids[i].distance(newCentroids[i], distance) <= threshold;
+  // if (!check) {
+  // return false;
+  // }
+  // }
+  // return true;
+  // }
+
+  private static boolean convergenceAchieved(
+      Vector[] oldCentroids, Vector[] newCentroids,
       float threshold) {
     boolean check = true;
     for (int i = 0; i < oldCentroids.length; i++) {
-      check = oldCentroids[i].distance(newCentroids[i], distance) <= threshold;
+      check = oldCentroids[i].distance(newCentroids[i]) <= threshold;
       if (!check) {
         return false;
       }
@@ -47,68 +61,136 @@ public class KMeans {
     return true;
   }
 
-  private static Vector[] centroidsInit(Configuration conf, String pathString, int k, int dataSetSize)
-      throws IOException {
-    Vector[] points = new Vector[k];
+  // private static Vector[] centroidsInit(Configuration conf, String pathString,
+  // int k, int dataSetSize)
+  // throws IOException {
+  // Vector[] points = new Vector[k];
 
-    // Create a sorted list of positions without duplicates
-    // Positions are the line index of the random selected centroids
-    List<Integer> positions = new ArrayList<Integer>();
+  // // Create a sorted list of positions without duplicates
+  // // Positions are the line index of the random selected centroids
+  // List<Integer> positions = new ArrayList<Integer>();
+  // Random random = new Random();
+  // int pos;
+  // while (positions.size() < k) {
+  // pos = random.nextInt(dataSetSize);
+  // if (!positions.contains(pos)) {
+  // positions.add(pos);
+  // }
+  // }
+  // Collections.sort(positions);
+
+  // // File reading utils
+  // Path path = new Path(pathString);
+  // FileSystem hdfs = FileSystem.get(conf);
+  // FSDataInputStream in = hdfs.open(path);
+  // BufferedReader br = new BufferedReader(new InputStreamReader(in));
+
+  // // Get centroids from the file
+  // int row = 0;
+  // int i = 0;
+  // int position;
+  // while (i < positions.size()) {
+  // position = positions.get(i);
+  // String point = br.readLine();
+  // if (row == position) {
+  // points[i] = new Vector(point.split(","));
+  // i++;
+  // }
+  // row++;
+  // }
+  // br.close();
+
+  // return points;
+  // }
+
+  private static Vector[] getRandomCentroids(Configuration conf, String inputFileStringPath, int k, int dataSetSize)
+      throws IOException {
+    // Vector[] vectors = new Vector[k];
+    Vector[] vectors = new Vector[k];
+
+    List<Integer> centroidIndices = new ArrayList<>();
     Random random = new Random();
-    int pos;
-    while (positions.size() < k) {
-      pos = random.nextInt(dataSetSize);
-      if (!positions.contains(pos)) {
-        positions.add(pos);
+    int index;
+    while (centroidIndices.size() < k) {
+      index = random.nextInt(dataSetSize); // random number between 0 and dataSetSize
+      if (!centroidIndices.contains(index)) {
+        centroidIndices.add(index);
       }
     }
-    Collections.sort(positions);
+    Collections.sort(centroidIndices);
 
     // File reading utils
-    Path path = new Path(pathString);
+    Path inputFilePath = new Path(inputFileStringPath);
     FileSystem hdfs = FileSystem.get(conf);
-    FSDataInputStream in = hdfs.open(path);
-    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    FSDataInputStream f = hdfs.open(inputFilePath);
+    BufferedReader reader = new BufferedReader(new InputStreamReader(f));
 
     // Get centroids from the file
     int row = 0;
     int i = 0;
     int position;
-    while (i < positions.size()) {
-      position = positions.get(i);
-      String point = br.readLine();
+
+    while (i < centroidIndices.size()) {
+      position = centroidIndices.get(i);
+      String vector = reader.readLine();
       if (row == position) {
-        points[i] = new Vector(point.split(","));
+        // vectors.set(i, new Vector(vector.split(",")));
+        vectors[i] = new Vector(vector.split(","));
         i++;
       }
       row++;
     }
-    br.close();
+    reader.close();
 
-    return points;
+    return vectors;
   }
+
+  // private static Vector[] readCentroids(Configuration conf, int k, String
+  // pathString)
+  // throws IOException, FileNotFoundException {
+  // Vector[] points = new Vector[k];
+  // FileSystem hdfs = FileSystem.get(conf);
+  // FileStatus[] status = hdfs.listStatus(new Path(pathString));
+
+  // for (int i = 0; i < status.length; i++) {
+  // // Read the centroids from the hdfs
+  // if (!status[i].getPath().toString().endsWith("_SUCCESS")) {
+  // BufferedReader br = new BufferedReader(new
+  // InputStreamReader(hdfs.open(status[i].getPath())));
+  // String[] keyValueSplit = br.readLine().split("\t"); // Split line in K,V
+  // int centroidId = Integer.parseInt(keyValueSplit[0]);
+  // String[] point = keyValueSplit[1].split(",");
+  // points[centroidId] = new Vector(point);
+  // br.close();
+  // }
+  // }
+  // // Delete temp directory
+  // hdfs.delete(new Path(pathString), true);
+
+  // return points;
+  // }
 
   private static Vector[] readCentroids(Configuration conf, int k, String pathString)
       throws IOException, FileNotFoundException {
-    Vector[] points = new Vector[k];
+    Vector[] vectors = new Vector[k];
     FileSystem hdfs = FileSystem.get(conf);
     FileStatus[] status = hdfs.listStatus(new Path(pathString));
 
     for (int i = 0; i < status.length; i++) {
       // Read the centroids from the hdfs
-      if (!status[i].getPath().toString().endsWith("_SUCCESS")) {
-        BufferedReader br = new BufferedReader(new InputStreamReader(hdfs.open(status[i].getPath())));
-        String[] keyValueSplit = br.readLine().split("\t"); // Split line in K,V
-        int centroidId = Integer.parseInt(keyValueSplit[0]);
-        String[] point = keyValueSplit[1].split(",");
-        points[centroidId] = new Vector(point);
-        br.close();
+      if (status[i].getPath().toString().endsWith("_SUCCESS")) {
+        continue;
       }
+      BufferedReader reader = new BufferedReader(new InputStreamReader(hdfs.open(status[i].getPath())));
+      String[] keyValueSplit = reader.readLine().split("\t"); // Split line in K,V
+      int centroidId = Integer.parseInt(keyValueSplit[0]);
+      vectors[centroidId] = new Vector(keyValueSplit[1].split(","));
+      reader.close();
     }
     // Delete temp directory
     hdfs.delete(new Path(pathString), true);
 
-    return points;
+    return vectors;
   }
 
   private static void finalize(Configuration conf, Vector[] centroids, String output) throws IOException {
@@ -147,7 +229,6 @@ public class KMeans {
     final String INPUT = otherArgs[0];
     final String OUTPUT = otherArgs[1] + "/temp";
     final int DATASET_SIZE = conf.getInt("dataset", 10);
-    final int DISTANCE = conf.getInt("distance", 2);
     final int K = conf.getInt("k", 3);
     final float THRESHOLD = conf.getFloat("threshold", 0.0001f);
     final int MAX_ITERATIONS = conf.getInt("max.iteration", 30);
@@ -157,7 +238,7 @@ public class KMeans {
 
     // Initial centroids
     startIC = System.currentTimeMillis();
-    newCentroids = centroidsInit(conf, INPUT, K, DATASET_SIZE);
+    newCentroids = getRandomCentroids(conf, INPUT, K, DATASET_SIZE);
     endIC = System.currentTimeMillis();
     for (int i = 0; i < K; i++) {
       conf.set("centroid." + i, newCentroids[i].toString());
@@ -199,7 +280,7 @@ public class KMeans {
       newCentroids = readCentroids(conf, K, OUTPUT);
 
       // Check if centroids are changed
-      stop = stoppingCriterion(oldCentroids, newCentroids, DISTANCE, THRESHOLD);
+      stop = convergenceAchieved(oldCentroids, newCentroids, THRESHOLD);
 
       if (stop || i == (MAX_ITERATIONS - 1)) {
         finalize(conf, newCentroids, otherArgs[1]);
