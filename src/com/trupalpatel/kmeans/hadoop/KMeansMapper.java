@@ -2,28 +2,30 @@ package com.trupalpatel.kmeans.hadoop;
 
 import java.io.IOException;
 
+// import com.trupalpatel.utils.Vector;
+import it.unipi.hadoop.model.Vector;
+
+
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
 
-import it.unipi.hadoop.model.Point;
+public class KMeansMapper extends Mapper<LongWritable, Text, IntWritable, Vector> {
 
-public class KMeansMapper extends Mapper<LongWritable, Text, IntWritable, Point> {
-
-    private Point[] centroids;
+    private Vector[] centroids;
     private int p;
-    private final Point point = new Point();
+    private final Vector point = new Vector();
     private final IntWritable centroid = new IntWritable();
 
     public void setup(Context context) {
         int k = Integer.parseInt(context.getConfiguration().get("k"));
         this.p = Integer.parseInt(context.getConfiguration().get("distance"));
 
-        this.centroids = new Point[k];
+        this.centroids = new Vector[k];
         for (int i = 0; i < k; i++) {
             String[] centroid = context.getConfiguration().getStrings("centroid." + i);
-            this.centroids[i] = new Point(centroid);
+            this.centroids[i] = new Vector(centroid);
         }
     }
 

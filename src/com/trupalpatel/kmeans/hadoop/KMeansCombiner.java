@@ -3,18 +3,19 @@ package com.trupalpatel.kmeans.hadoop;
 
 import java.io.IOException;
 
+// import com.trupalpatel.utils.Vector;
+import it.unipi.hadoop.model.Vector;
+
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Reducer;
 
-import it.unipi.hadoop.model.Point;
+public class KMeansCombiner extends Reducer<IntWritable, Vector, IntWritable, Vector> {
 
-public class KMeansCombiner extends Reducer<IntWritable, Point, IntWritable, Point> {
-
-    public void reduce(IntWritable centroid, Iterable<Point> points, Context context)
+    public void reduce(IntWritable centroid, Iterable<Vector> points, Context context)
             throws IOException, InterruptedException {
 
         // Sum the points
-        Point sum = Point.copy(points.iterator().next());
+        Vector sum = Vector.copy(points.iterator().next());
         while (points.iterator().hasNext()) {
             sum.sum(points.iterator().next());
         }

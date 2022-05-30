@@ -16,6 +16,8 @@ import java.util.Random;
 import com.trupalpatel.kmeans.hadoop.KMeansCombiner;
 import com.trupalpatel.kmeans.hadoop.KMeansMapper;
 import com.trupalpatel.kmeans.hadoop.KMeansReducer;
+// import com.trupalpatel.utils.Vector;
+import it.unipi.hadoop.model.Vector;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
@@ -25,18 +27,15 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.mapreduce.Job;
-import org.apache.hadoop.util.GenericOptionsParser;
-
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
-import it.unipi.hadoop.model.Point;
+import org.apache.hadoop.util.GenericOptionsParser;
 
 public class KMeans {
 
-  private static boolean stoppingCriterion(Point[] oldCentroids, Point[] newCentroids, int distance,
+  private static boolean stoppingCriterion(Vector[] oldCentroids, Vector[] newCentroids, int distance,
       float threshold) {
     boolean check = true;
     for (int i = 0; i < oldCentroids.length; i++) {
@@ -48,9 +47,9 @@ public class KMeans {
     return true;
   }
 
-  private static Point[] centroidsInit(Configuration conf, String pathString, int k, int dataSetSize)
+  private static Vector[] centroidsInit(Configuration conf, String pathString, int k, int dataSetSize)
       throws IOException {
-    Point[] points = new Point[k];
+    Vector[] points = new Vector[k];
 
     // Create a sorted list of positions without duplicates
     // Positions are the line index of the random selected centroids
@@ -79,7 +78,7 @@ public class KMeans {
       position = positions.get(i);
       String point = br.readLine();
       if (row == position) {
-        points[i] = new Point(point.split(","));
+        points[i] = new Vector(point.split(","));
         i++;
       }
       row++;
@@ -89,9 +88,9 @@ public class KMeans {
     return points;
   }
 
-  private static Point[] readCentroids(Configuration conf, int k, String pathString)
+  private static Vector[] readCentroids(Configuration conf, int k, String pathString)
       throws IOException, FileNotFoundException {
-    Point[] points = new Point[k];
+    Vector[] points = new Vector[k];
     FileSystem hdfs = FileSystem.get(conf);
     FileStatus[] status = hdfs.listStatus(new Path(pathString));
 
@@ -102,7 +101,7 @@ public class KMeans {
         String[] keyValueSplit = br.readLine().split("\t"); // Split line in K,V
         int centroidId = Integer.parseInt(keyValueSplit[0]);
         String[] point = keyValueSplit[1].split(",");
-        points[centroidId] = new Point(point);
+        points[centroidId] = new Vector(point);
         br.close();
       }
     }
@@ -112,7 +111,7 @@ public class KMeans {
     return points;
   }
 
-  private static void finalize(Configuration conf, Point[] centroids, String output) throws IOException {
+  private static void finalize(Configuration conf, Vector[] centroids, String output) throws IOException {
     FileSystem hdfs = FileSystem.get(conf);
     FSDataOutputStream dos = hdfs.create(new Path(output + "/centroids.txt"), true);
     BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(dos));
@@ -153,8 +152,8 @@ public class KMeans {
     final float THRESHOLD = conf.getFloat("threshold", 0.0001f);
     final int MAX_ITERATIONS = conf.getInt("max.iteration", 30);
 
-    Point[] oldCentroids = new Point[K];
-    Point[] newCentroids = new Point[K];
+    Vector[] oldCentroids = new Vector[K];
+    Vector[] newCentroids = new Vector[K];
 
     // Initial centroids
     startIC = System.currentTimeMillis();
@@ -179,7 +178,7 @@ public class KMeans {
       iteration.setReducerClass(KMeansReducer.class);
       iteration.setNumReduceTasks(K); // one task each centroid
       iteration.setOutputKeyClass(IntWritable.class);
-      iteration.setOutputValueClass(Point.class);
+      iteration.setOutputValueClass(Vector.class);
       FileInputFormat.addInputPath(iteration, new Path(INPUT));
       FileOutputFormat.setOutputPath(iteration, new Path(OUTPUT));
       iteration.setInputFormatClass(TextInputFormat.class);
@@ -195,7 +194,7 @@ public class KMeans {
 
       // Save old centroids and read new centroids
       for (int id = 0; id < K; id++) {
-        oldCentroids[id] = Point.copy(newCentroids[id]);
+        oldCentroids[id] = Vector.copy(newCentroids[id]);
       }
       newCentroids = readCentroids(conf, K, OUTPUT);
 
