@@ -3,7 +3,6 @@ package com.trupalpatel.utils;
 import java.io.DataInput;
 import java.io.DataOutput;
 import java.io.IOException;
-// import java.util.Arrays;
 import java.util.Arrays;
 
 import org.apache.hadoop.io.Writable;
@@ -59,14 +58,6 @@ public class Vector implements Writable {
         this.setDimension();
     }
 
-    public void set(float[] components) {
-        this.setComponents(components);
-    }
-
-    public void set(String[] stringComponents) {
-        this.setComponents(stringComponents);
-    }
-
     private void setDimension() {
         this.dimension = this.components.length;
     }
@@ -92,21 +83,9 @@ public class Vector implements Writable {
 
     @Override
     public String toString() {
-    String s = Arrays.toString(this.components);
-    return s.substring(1, s.length() - 1).replace(", ", ",");
+        String s = Arrays.toString(this.components);
+        return s.substring(1, s.length() - 1).replace(", ", ",");
     }
-
-    // @Override
-    // public String toString() {
-    //     StringBuilder point = new StringBuilder();
-    //     for (int i = 0; i < this.dimension; i++) {
-    //         point.append(Float.toString(this.components[i]));
-    //         if (i != dimension - 1) {
-    //             point.append(",");
-    //         }
-    //     }
-    //     return point.toString();
-    // }
 
     public Vector add(Vector otherVector) {
         if (!(Vector.areCompatible(this, otherVector))) {
@@ -134,10 +113,6 @@ public class Vector implements Writable {
 
     }
 
-    public Vector sum(Vector otherVector) {
-        return this.add(otherVector);
-    }
-
     public float distance(Vector otherVector) {
         if (!(Vector.areCompatible(this, otherVector))) {
             throw new IllegalArgumentException("Dimension mismatch");
@@ -153,12 +128,6 @@ public class Vector implements Writable {
 
     public float distance(Vector otherVector, int type) {
         return this.distance(otherVector);
-    }
-
-    public static Vector copy(Vector v) {
-        Vector newVector = new Vector(v.components);
-        newVector.weight = v.weight;
-        return newVector;
     }
 
     public Vector scale(float factor) {
@@ -187,4 +156,11 @@ public class Vector implements Writable {
     public void average() {
         this.scale();
     }
+
+    public static Vector copy(Vector v) {
+        Vector newVector = new Vector(v.components);
+        newVector.weight = v.weight;
+        return newVector;
+    }
+
 }

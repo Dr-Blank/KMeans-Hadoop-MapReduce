@@ -13,17 +13,13 @@ public class Vector implements Writable {
     private int dim;
     private int numPoints = 1; // For partial sums
 
+    public static boolean areCompatible(Vector v1, Vector v2) {
+        return v1.dim == v2.dim;
+    }
+
     public Vector() {
         this.dim = 0;
     }
-
-    // public Vector(final float[] c) {
-    // this.set(c);
-    // }
-
-    // public Vector(final String[] s) {
-    // this.set(s);
-    // }
 
     public Vector(final float[] components) {
         this.setComponents(components);
@@ -31,6 +27,11 @@ public class Vector implements Writable {
 
     public Vector(final String[] components) {
         this.setComponents(components);
+    }
+
+    // Getters and Setters for Components.
+    public float[] getComponents() {
+        return components;
     }
 
     public void setComponents(float[] components) {
@@ -78,9 +79,9 @@ public class Vector implements Writable {
     }
 
     public Vector add(Vector otherVector) {
-        // if (!(Vector.areCompatible(this, otherVector))) {
-        // throw new IllegalArgumentException("Dimension mismatch");
-        // }
+        if (!(Vector.areCompatible(this, otherVector))) {
+            throw new IllegalArgumentException("Dimension mismatch");
+        }
 
         for (int i = 0; i < this.dim; i++) {
             this.components[i] += otherVector.components[i];
@@ -92,9 +93,9 @@ public class Vector implements Writable {
     }
 
     public static Vector add(Vector v1, Vector v2) {
-        // if (!(Vector.areCompatible(v1, v2))) {
-        // throw new IllegalArgumentException("Dimension mismatch");
-        // }
+        if (!(Vector.areCompatible(v1, v2))) {
+            throw new IllegalArgumentException("Dimension mismatch");
+        }
         float[] newComponents = new float[v1.dim];
         for (int i = 0; i < v1.dim; i++) {
             newComponents[i] = v1.components[i] + v2.components[i];
@@ -103,14 +104,10 @@ public class Vector implements Writable {
 
     }
 
-    public Vector sum(Vector otherVector) {
-        return this.add(otherVector);
-    }
-
     public float distance(Vector otherVector) {
-        // if (!(Vector.areCompatible(this, otherVector))) {
-        // throw new IllegalArgumentException("Dimension mismatch");
-        // }
+        if (!(Vector.areCompatible(this, otherVector))) {
+            throw new IllegalArgumentException("Dimension mismatch");
+        }
         // Euclidean distance
         float distance = 0.0f;
         for (int i = 0; i < this.dim; i++) {
@@ -124,18 +121,6 @@ public class Vector implements Writable {
         return this.distance(otherVector);
     }
 
-    public void scale() {
-        for (int i = 0; i < this.dim; i++) {
-            float temp = this.components[i] / this.numPoints;
-            this.components[i] = (float) Math.round(temp * 100000) / 100000.0f;
-        }
-        this.numPoints = 1;
-    }
-
-    public void average() {
-        this.scale();
-    }
-
     public Vector scale(float factor) {
         for (int i = 0; i < this.dim; i++) {
             this.components[i] = (float) this.components[i] * factor;
@@ -147,8 +132,6 @@ public class Vector implements Writable {
         this.scale((float) 1 / this.numPoints);
         this.numPoints = 1;
         return this;
-        // this.scale();
-        // return this;
     }
 
     public static Vector copy(Vector v) {
