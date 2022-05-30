@@ -131,11 +131,21 @@ public class Vector implements Writable {
         return this.distance(otherVector);
     }
 
-    public void average() {
+    // public void average() {
+    //     for (int i = 0; i < this.dim; i++) {
+    //         float temp = this.components[i] / this.numPoints;
+    //         this.components[i] = (float) Math.round(temp * 100000) / 100000.0f;
+    //     }
+    //     this.numPoints = 1;
+    // }
+    public void scale() {
         for (int i = 0; i < this.dim; i++) {
             float temp = this.components[i] / this.numPoints;
             this.components[i] = (float) Math.round(temp * 100000) / 100000.0f;
         }
         this.numPoints = 1;
+    }
+    public void average() {
+        this.scale();
     }
 }
