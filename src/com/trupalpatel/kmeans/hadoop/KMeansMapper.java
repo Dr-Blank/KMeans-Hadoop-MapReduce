@@ -34,7 +34,7 @@ public class KMeansMapper extends Mapper<LongWritable, Text, IntWritable, Vector
 
         // Contruct the point
         String[] pointString = value.toString().split(",");
-        point.set(pointString);
+        point.setComponents(pointString);
 
         // Initialize variables
         float minDist = Float.POSITIVE_INFINITY;

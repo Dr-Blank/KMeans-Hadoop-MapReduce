@@ -11,39 +11,44 @@ public class Vector implements Writable {
 
     private float[] components = null;
     private int dim;
-    private int numPoints; // For partial sums
+    private int numPoints=1; // For partial sums
 
     public Vector() {
         this.dim = 0;
     }
 
-    public Vector(final float[] c) {
-        this.set(c);
+    // public Vector(final float[] c) {
+    // this.set(c);
+    // }
+
+    // public Vector(final String[] s) {
+    // this.set(s);
+    // }
+
+    public Vector(final float[] components) {
+        this.setComponents(components);
     }
 
-    public Vector(final String[] s) {
-        this.set(s);
+    public Vector(final String[] components) {
+        this.setComponents(components);
     }
 
-    public static Vector copy(final Vector p) {
-        Vector ret = new Vector(p.components);
-        ret.numPoints = p.numPoints;
-        return ret;
+
+    public void setComponents(float[] components) {
+        this.components = components;
+        this.setDimension();
     }
 
-    public void set(final float[] c) {
-        this.components = c;
-        this.dim = c.length;
-        this.numPoints = 1;
-    }
-
-    public void set(final String[] s) {
-        this.components = new float[s.length];
-        this.dim = s.length;
-        this.numPoints = 1;
-        for (int i = 0; i < s.length; i++) {
-            this.components[i] = Float.parseFloat(s[i]);
+    public void setComponents(String[] stringComponents) {
+        this.components = new float[stringComponents.length];
+        for (int i = 0; i < stringComponents.length; i++) {
+            this.components[i] = Float.parseFloat(stringComponents[i]);
         }
+        this.setDimension();
+    }
+
+    private void setDimension() {
+        this.dim = this.components.length;
     }
 
     @Override
@@ -67,21 +72,10 @@ public class Vector implements Writable {
         }
     }
 
-    // @Override
-    // public String toString() {
-    //     StringBuilder point = new StringBuilder();
-    //     for (int i = 0; i < this.dim; i++) {
-    //         point.append(Float.toString(this.components[i]));
-    //         if (i != dim - 1) {
-    //             point.append(",");
-    //         }
-    //     }
-    //     return point.toString();
-    // }
     @Override
     public String toString() {
-    String s = Arrays.toString(this.components);
-    return s.substring(1, s.length() - 1).replace(", ", ",");
+        String s = Arrays.toString(this.components);
+        return s.substring(1, s.length() - 1).replace(", ", ",");
     }
 
     public Vector add(Vector otherVector) {
@@ -142,4 +136,11 @@ public class Vector implements Writable {
     public void average() {
         this.scale();
     }
+    
+    public static Vector copy(final Vector p) {
+        Vector ret = new Vector(p.components);
+        ret.numPoints = p.numPoints;
+        return ret;
+    }
+
 }
