@@ -1,4 +1,3 @@
-
 package com.trupalpatel.kmeans.hadoop;
 
 import java.io.IOException;

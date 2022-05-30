@@ -1,7 +1,5 @@
 package com.trupalpatel.kmeans;
 
-// reference: https://github.com/seraogianluca/k-means-mapreduce/tree/master/k-means
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileNotFoundException;
@@ -32,6 +30,18 @@ import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
 import org.apache.hadoop.util.GenericOptionsParser;
 
+/**
+ * Performs K-means clustering using hadoop MapReduce
+ * 
+ * Usage for the jar file:
+ * {@code hadoop jar <jar_file> <input_file> <output_folder>}
+ * 
+ * @see <a href=
+ *      "https://github.com/seraogianluca/k-means-mapreduce/tree/master/k-means">Inspiration</a>
+ * @see {@link Vector} for other implementation details
+ * 
+ * @version 1.0.3
+ */
 public class KMeans {
 
   private static final Path CONFIG_FILE = new Path("config.xml");

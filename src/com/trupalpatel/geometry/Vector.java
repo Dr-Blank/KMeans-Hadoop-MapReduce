@@ -7,16 +7,19 @@ import java.util.Arrays;
 
 import org.apache.hadoop.io.Writable;
 
+/**
+ * Represents a vector in {@code n} dimensions.
+ * 
+ * to be used with hadoop
+ * 
+ * @author Trupal Patel
+ * @version 1.0.3
+ */
 public class Vector implements Writable {
-    /**
-     * Vector class to represent a vector in n dimensions.
-     * 
-     * to be used with hadoop
-     */
 
     private float[] components = null;// the components of the vector, x y z ....
     private int dimensions;// number of components
-    private int weight = 1; // to keep track of the num times a vector was added to this vector
+    private int weight = 1; // to keep track of the number of times a vector was added to this vector
 
     public static boolean areCompatible(Vector v1, Vector v2) {
         return v1.dimensions == v2.dimensions;
@@ -103,11 +106,14 @@ public class Vector implements Writable {
         return this;
     }
 
+    /**
+     * @return Euclidean Distance
+     */
     public float distanceTo(Vector otherVector) {
         if (!(Vector.areCompatible(this, otherVector))) {
             throw new IllegalArgumentException("Dimension mismatch");
         }
-        // Euclidean distance
+
         float distance = 0.0f;
         for (int i = 0; i < this.dimensions; i++) {
             distance += Math.pow(Math.abs(this.components[i] - otherVector.components[i]), 2);
@@ -116,6 +122,9 @@ public class Vector implements Writable {
         return distance;
     }
 
+    /**
+     * Scales the {@code components} by the given {@code factor}
+     */
     public Vector scaleBy(float factor) {
         for (int i = 0; i < this.dimensions; i++) {
             this.components[i] = (float) this.components[i] * factor;
@@ -123,6 +132,9 @@ public class Vector implements Writable {
         return this;
     }
 
+    /**
+     * Used with the Reducer to find the mean of the sum of vectors
+     */
     public Vector averageOut() {
         this.scaleBy((float) 1 / this.weight);
         this.weight = 1;

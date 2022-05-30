@@ -16,12 +16,12 @@ public class KMeansReducer extends Reducer<IntWritable, Vector, Text, Text> {
     public void reduce(IntWritable centroidIndex, Iterable<Vector> vectors, Context context)
             throws IOException, InterruptedException {
 
-        // Sum the partial sums
+        // add up the vectors from combiner
         Vector sum = Vector.copy(vectors.iterator().next());
         while (vectors.iterator().hasNext()) {
             sum.add(vectors.iterator().next());
         }
-        // Calculate the new centroid
+        // mean of the sums
         Vector newCentroid = sum.averageOut();
 
         centroidKey.set(centroidIndex.toString());
