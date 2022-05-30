@@ -85,33 +85,50 @@ public class Vector implements Writable {
         this.numPoints += p.numPoints;
     }
 
-    public float distance(Vector p, int h) {
-        if (h < 0) {
-            // Consider only metric distances
-            h = 2;
-        }
+    // public float distance(Vector p, int h) {
+    // if (h < 0) {
+    // // Consider only metric distances
+    // h = 2;
+    // }
 
-        if (h == 0) {
-            // Chebyshev
-            float max = -1f;
-            float diff = 0.0f;
-            for (int i = 0; i < this.dim; i++) {
-                diff = Math.abs(this.components[i] - p.components[i]);
-                if (diff > max) {
-                    max = diff;
-                }
-            }
-            return max;
+    // if (h == 0) {
+    // // Chebyshev
+    // float max = -1f;
+    // float diff = 0.0f;
+    // for (int i = 0; i < this.dim; i++) {
+    // diff = Math.abs(this.components[i] - p.components[i]);
+    // if (diff > max) {
+    // max = diff;
+    // }
+    // }
+    // return max;
 
-        } else {
-            // Manhattan, Euclidean, Minkowsky
-            float dist = 0.0f;
-            for (int i = 0; i < this.dim; i++) {
-                dist += Math.pow(Math.abs(this.components[i] - p.components[i]), h);
-            }
-            dist = (float) Math.round(Math.pow(dist, 1f / h) * 100000) / 100000.0f;
-            return dist;
+    // } else {
+    // // Manhattan, Euclidean, Minkowsky
+    // float dist = 0.0f;
+    // for (int i = 0; i < this.dim; i++) {
+    // dist += Math.pow(Math.abs(this.components[i] - p.components[i]), h);
+    // }
+    // dist = (float) Math.round(Math.pow(dist, 1f / h) * 100000) / 100000.0f;
+    // return dist;
+    // }
+    // }
+
+    public float distance(Vector otherVector) {
+        // if (!(Vector.areCompatible(this, otherVector))) {
+        //     throw new IllegalArgumentException("Dimension mismatch");
+        // }
+        // Euclidean distance
+        float distance = 0.0f;
+        for (int i = 0; i < this.dim; i++) {
+            distance += Math.pow(Math.abs(this.components[i] - otherVector.components[i]), 2);
         }
+        distance = (float) Math.round(Math.pow(distance, 1f / 2f) * 100000) / 100000.0f;
+        return distance;
+    }
+
+    public float distance(Vector otherVector, int type) {
+        return this.distance(otherVector);
     }
 
     public void average() {
